@@ -27,7 +27,8 @@ public class StepDefinitions {
 		Assertions.assertNotNull(this.response);
 		this.response.then().statusCode(HttpStatus.OK_200);
 		this.response.then().contentType(ContentType.JSON);
-		this.response.then().body("name", CoreMatchers.equalTo("user1"));
+		this.response.then().body("[0].name", CoreMatchers.equalTo("user1"));
+		this.response.then().body("[1].name", CoreMatchers.equalTo("user2"));
 	}
 
 }

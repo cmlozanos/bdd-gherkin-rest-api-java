@@ -16,7 +16,8 @@ public class MockServer {
 	public void startAndConfigureMockServer() {
 		this.wireMockServer.start();
 		WireMock.configureFor("localhost", this.wireMockServer.port());
-		WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/users")).willReturn(WireMock.aResponse()));
+		WireMock.stubFor(
+				WireMock.get(WireMock.urlEqualTo("/users")).willReturn(WireMock.okJson("{\"name\":\"user1\"}")));
 		this.host = "http://localhost:" + this.wireMockServer.port();
 	}
 

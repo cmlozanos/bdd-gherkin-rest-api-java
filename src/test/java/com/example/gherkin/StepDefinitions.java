@@ -57,11 +57,18 @@ public class StepDefinitions {
 		this.response = RestAssured.get(this.server.getHost() + this.path + "/" + this.id).thenReturn();
 	}
 
-	@Then("user will be returned")
-	public void user_will_be_returned() {
+	@Then("user will be found")
+	public void user_will_be_found() {
 		Assertions.assertNotNull(this.response);
 		this.response.then().contentType(ContentType.JSON);
 		this.response.then().body("name", CoreMatchers.equalTo("user" + this.id));
+	}
+
+	@Then("user will be not found")
+	public void user_will_be_not_found() {
+		Assertions.assertNotNull(this.response);
+		this.response.then().contentType(ContentType.JSON);
+		this.response.then().body("message", CoreMatchers.equalTo("user not found"));
 	}
 
 	@Then("status will be {string}")

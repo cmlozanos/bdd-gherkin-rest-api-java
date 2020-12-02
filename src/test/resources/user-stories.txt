@@ -1,0 +1,49 @@
+User stories:
+
+	1.- As user I Want recover the full list of users
+	2.- As user I Want recover an user by identifier
+	3.- As user I Want add an user
+	
+	
+User stories:
+
+	1.- Retrieve all users from web service
+	
+		Given web service with users
+		 |1 | user1|
+		 |2 | user2|
+		And service is started
+		When retrieve all users
+		Then status will be "success"
+		And all users will be returned
+		
+	2.- Retrieve an user by id from web service
+		Given web service with users
+		 |1 | user1|
+		 |2 | user2|
+		And service is started
+		And user id is 1
+		When retrieve user by id
+    	Then status will be "success"
+		
+		2.1.- Retrieve an user by invalid id from web service
+			.....
+			.....
+			.....
+			.....
+		
+		2.2.- Add outline cases for this scenario
+			.....
+			.....
+			.....
+	3.- Add a new user to the users at web service
+		Given users is
+		 |1 | user1|
+		 |2 | user2|
+		And server is started
+		And User with id 10 name "user10"
+		When add new user
+    	Then status will be "created"
+    	And user id will be returned
+	
+	

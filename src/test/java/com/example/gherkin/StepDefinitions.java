@@ -17,6 +17,7 @@ public class StepDefinitions {
 	private final MockServer server = new MockServer();
 	private String path;
 	private Integer id;
+	private String name;
 
 	@Given("server is started")
 	public void server_is_started() {
@@ -68,8 +69,39 @@ public class StepDefinitions {
 
 	@Then("status will be {string}")
 	public void status_will_be(final String status) {
-		final int statusCode = "success".equalsIgnoreCase(status) ? HttpStatus.SC_OK : HttpStatus.SC_NOT_FOUND;
+		final int statusCode;
+		switch (status) {
+		case "success":
+			statusCode = HttpStatus.SC_OK;
+			break;
+		case "not found":
+			statusCode = HttpStatus.SC_NOT_FOUND;
+			break;
+		case "created":
+			statusCode = HttpStatus.SC_CREATED;
+			break;
+		default:
+			statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
+			break;
+		}
 		Assertions.assertNotNull(this.response);
 		this.response.then().statusCode(statusCode);
+	}
+
+	@Given("User with name {string}")
+	public void user_with_name(final String name) {
+		this.name = name;
+	}
+
+	@When("add new user")
+	public void add_new_user() {
+		final String user = String.format("{\"name\" : \"%s\"}", this.name);
+		this.response = RestAssured.given().body(user).post(this.server.getHost() + this.path).thenReturn();
+	}
+
+	@Then("user id will be returned")
+	public void user_id_will_be_returned() {
+		Assertions.assertNotNull(this.response);
+		this.response.then().header("location", CoreMatchers.equalTo(this.server.getHost() + this.path + "/" + 10));
 	}
 }

@@ -6,14 +6,14 @@ Feature:
 
   Scenario: Retrieval users from a server
     Given path is "/users"
-    When perform GET operation to retrieve users
+    When retrieve all users
     Then status will be "success"
     And all users will be returned
     
   Scenario Outline: Retrieval user by id from a server
     Given path is "/users"
     And user id is <id>
-    When perform GET operation to retrieve user by id
+    When retrieve user by id
     Then status will be <status>
     And user will be <found>
     

@@ -28,8 +28,8 @@ public class StepDefinitions {
 		this.path = path;
 	}
 
-	@When("perform GET operation to retrieve users")
-	public void perform_get_operation_to_retrieve_users() {
+	@When("retrieve all users")
+	public void retrieve_all_users() {
 		this.response = RestAssured.get(this.server.getHost() + this.path).thenReturn();
 	}
 
@@ -47,8 +47,8 @@ public class StepDefinitions {
 		this.id = id;
 	}
 
-	@When("perform GET operation to retrieve user by id")
-	public void perform_get_operation_to_retrieve_user_by_id() {
+	@When("retrieve user by id")
+	public void retrieve_user_by_id() {
 		this.response = RestAssured.get(this.server.getHost() + this.path + "/" + this.id).thenReturn();
 	}
 

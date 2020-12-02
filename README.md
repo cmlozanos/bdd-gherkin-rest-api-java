@@ -1,4 +1,5 @@
 # bdd-gherkin-rest-api-java
+![Java CI with Maven](https://github.com/cmlozanos/kata-bdd-gherkin-rest-api-java/workflows/Java%20CI%20with%20Maven/badge.svg)
 
 ## 1.- Create project from Maven archetipe:
   Cucumber JVM: Maven Archetype https://repo1.maven.org/maven2

@@ -1,16 +1,31 @@
 package com.example.gherkin.server;
 
+import static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.okForJson;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+import static com.google.common.net.HttpHeaders.LOCATION;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.created;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.noContent;
+import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.google.common.net.HttpHeaders;
 
 public class MockServer {
 
@@ -22,54 +37,56 @@ public class MockServer {
 	private Map<Integer, User> users;
 
 	public MockServer() {
-		this.wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+		wireMockServer = new WireMockServer(options().dynamicPort());
 	}
 
 	public void startAndConfigureMockServer(final Map<Integer, User> users) {
 		this.users = users;
 
-		this.wireMockServer.start();
-		this.host = "http://localhost:" + this.wireMockServer.port();
+		wireMockServer.start();
+		host = "http://localhost:" + wireMockServer.port();
 
-		WireMock.configureFor("localhost", this.wireMockServer.port());
-		this.setUpDefaultResponseTo404();
+		configureFor("localhost", wireMockServer.port());
+		setUpDefaultResponseTo404();
 
-		this.setUpUsers();
+		setUpUsers();
 	}
 
 	private void setUpDefaultResponseTo404() {
-		WireMock.stubFor(WireMock.any(WireMock.anyUrl()).willReturn(WireMock.aResponse()
-				.withStatus(HttpStatus.NOT_FOUND_404).withBody(MockServer.STATUS_ERROR_MESSAGE_ENDPOINT_NOT_FOUND)));
+		stubFor(any(anyUrl())
+				.willReturn(aResponse().withStatus(NOT_FOUND_404).withBody(STATUS_ERROR_MESSAGE_ENDPOINT_NOT_FOUND)));
 	}
 
 	private void setUpUsers() {
-		this.stubForAllUsers();
+		stubForAllUsers();
 
-		WireMock.stubFor(WireMock.get(WireMock.urlMatching("/users/.*")).willReturn(WireMock.notFound()
-				.withBody(MockServer.USER_NOT_FOUND_ERROR).withHeader(HttpHeaders.CONTENT_TYPE, "application/json")));
+		stubFor(get(urlMatching("/users/.*"))
+				.willReturn(notFound().withBody(USER_NOT_FOUND_ERROR).withHeader(CONTENT_TYPE, "application/json")));
 
-		this.users.forEach((id, element) -> this.stubForFindById(id));
+		users.forEach((id, element) -> stubForFindById(id));
 
-		WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/users"))
-				.willReturn(WireMock.created().withHeader(HttpHeaders.LOCATION, this.host + "/users/10")));
+		stubFor(post(urlEqualTo("/users")).willReturn(created().withHeader(LOCATION, host + "/users/10")));
 	}
 
 	private void stubForAllUsers() {
 		final List<User> users = new ArrayList<>();
-		this.users.forEach((id, element) -> users.add(element));
-		WireMock.stubFor(
-				WireMock.get(WireMock.urlEqualTo("/users")).willReturn(ResponseDefinitionBuilder.okForJson(users)));
+		if (this.users.isEmpty()) {
+			stubFor(get(urlEqualTo("/users")).willReturn(noContent()));
+		} else {
+			this.users.forEach((id, element) -> users.add(element));
+			stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
+		}
 	}
 
 	private void stubForFindById(final Integer id) {
-		WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/users/" + id)).willReturn(this.findUserById(id)));
+		stubFor(get(urlEqualTo("/users/" + id)).willReturn(findUserById(id)));
 	}
 
 	private ResponseDefinitionBuilder findUserById(final Integer id) {
-		return ResponseDefinitionBuilder.okForJson(this.users.get(id));
+		return okForJson(users.get(id));
 	}
 
 	public String getHost() {
-		return this.host;
+		return host;
 	}
 }

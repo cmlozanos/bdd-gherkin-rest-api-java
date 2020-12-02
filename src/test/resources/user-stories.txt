@@ -1,29 +1,46 @@
 User stories:
 
 	1.- As user I Want recover the full list of users
+		* Response Content Type will be JSON
+		* Each user will have id and name
+
+		* If list of users is empty then response status code is NO CONTENT
+		* If list of users is bigger than 20 the content will be paged
+		
 	2.- As user I Want recover an user by identifier
 	3.- As user I Want add an user
 	
 	
 User stories:
 
-	1.- Retrieve all users from web service
+	1.- As user I Want recover the full list of users
+
 	
-		Given web service with users
-		 |1 | user1|
-		 |2 | user2|
-		And service is started
-		When retrieve all users
-		Then status will be "success"
-		And all users will be returned
+		Acceptance Criteria:
 		
-	2.- Retrieve an user by id from web service
+		Scenario: Retrieve full list of users empty
+			Given web service with non users
+			When retrieve all users
+			Then status will be "no content"
+			
+		Scenario: Retrieve full list of users filled with 2 users	
+			Given web service with users
+			 |1 | user1|
+			 |2 | user2|
+			When retrieve all users
+			Then status will be "success"
+			And content type will be JSON
+			And all users will be returned
+			And each user will have id and name
+		
+		
+		
+		
+	2.- As user I Want recover an user by identifier
 		Given web service with users
 		 |1 | user1|
 		 |2 | user2|
-		And service is started
-		And user id is 1
-		When retrieve user by id
+		When retrieve user by id 1
     	Then status will be "success"
 		
 		2.1.- Retrieve an user by invalid id from web service
@@ -36,11 +53,10 @@ User stories:
 			.....
 			.....
 			.....
-	3.- Add a new user to the users at web service
+	3.- As user I Want add an user
 		Given users is
 		 |1 | user1|
 		 |2 | user2|
-		And server is started
 		And User with id 10 name "user10"
 		When add new user
     	Then status will be "created"

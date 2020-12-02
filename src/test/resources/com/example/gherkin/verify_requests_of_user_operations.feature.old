@@ -1,18 +1,17 @@
 Feature: 
-	Verify requests operations from a server
+	Verify requests of users operations from a web service
 
 	Background: Set a background for all tests
-		Given users is
+		Given web service with users
 		 |1 | user1|
 		 |2 | user2|
-		And server is started
 		 
-  Scenario: Retrieval users from a server
+  Scenario: As user I Want recover the full list of users
     When retrieve all users
     Then status will be "success"
     And all users will be returned
     
-  Scenario Outline: Retrieval user by id from a server
+  Scenario Outline: As user I Want recover an user by identifier
     Given user id is <id>
     When retrieve user by id
     Then status will be <status>
@@ -24,7 +23,7 @@ Feature:
     | 2  | "success"   | found     |
     | 3  | "not found" | not found |
     
-  Scenario: Add user to users on a server
+  Scenario: As user I Want add an user
     Given User with id 10 name "user10"
     When add new user
     Then status will be "created"

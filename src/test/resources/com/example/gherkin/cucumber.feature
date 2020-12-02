@@ -14,11 +14,12 @@ Feature:
     And path is "/users"
     And user id is <id>
     When perform GET operation to retrieve user by id
-    Then status will be "success"
-    And user will be returned
+    Then status will be <status>
+    And user will be <found>
     And server will be stoped
     
     Examples:
-    | id |
-    | 1  |
-    | 2  |
+    | id | status      | found     | 
+    | 1  | "success"   | found     |
+    | 2  | "success"   | found     |
+    | 3  | "not found" | not found |

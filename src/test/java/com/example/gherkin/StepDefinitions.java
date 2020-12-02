@@ -60,9 +60,14 @@ public class StepDefinitions {
 	@Then("user will be returned")
 	public void user_will_be_returned() {
 		Assertions.assertNotNull(this.response);
-		this.response.then().statusCode(HttpStatus.SC_OK);
 		this.response.then().contentType(ContentType.JSON);
 		this.response.then().body("name", CoreMatchers.equalTo("user1"));
 	}
 
+	@Then("status will be {string}")
+	public void status_will_be(final String status) {
+		final int statusCode = "success".equalsIgnoreCase(status) ? HttpStatus.SC_OK : HttpStatus.SC_NOT_FOUND;
+		Assertions.assertNotNull(this.response);
+		this.response.then().statusCode(statusCode);
+	}
 }

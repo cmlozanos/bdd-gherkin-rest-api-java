@@ -5,13 +5,20 @@ Feature:
     Given server is started
     And path is "/users"
     When perform GET operation to retrieve users
-    Then all users will be returned
+    Then status will be "success"
+    And all users will be returned
     And server will be stoped
     
-  Scenario: Retrieval user 1 from a server
+  Scenario Outline: Retrieval user by id from a server
     Given server is started
     And path is "/users"
-    And user id is 1
+    And user id is <id>
     When perform GET operation to retrieve user by id
-    Then user will be returned
+    Then status will be "success"
+    And user will be returned
     And server will be stoped
+    
+    Examples:
+    | id |
+    | 1  |
+    | 2  |

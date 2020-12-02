@@ -3,9 +3,11 @@ package com.example.gherkin;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.google.common.net.HttpHeaders;
 
 public class MockServer {
 
+	private static final String USER_NOT_FOUND_ERROR = "{ \"message\": \"user not found\" }";
 	private static final String USER_1 = "{\"name\":\"user1\"}";
 	private static final String USER_2 = "{\"name\":\"user2\"}";
 	private static final String ALL_USERS = "[" + MockServer.USER_1 + ", " + MockServer.USER_2 + "]";
@@ -21,6 +23,8 @@ public class MockServer {
 		this.wireMockServer.start();
 		WireMock.configureFor("localhost", this.wireMockServer.port());
 		WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/users")).willReturn(WireMock.okJson(MockServer.ALL_USERS)));
+		WireMock.stubFor(WireMock.get(WireMock.urlMatching("/users/.*")).willReturn(WireMock.notFound()
+				.withBody(MockServer.USER_NOT_FOUND_ERROR).withHeader(HttpHeaders.CONTENT_TYPE, "application/json")));
 		WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/users/1")).willReturn(WireMock.okJson(MockServer.USER_1)));
 		WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/users/2")).willReturn(WireMock.okJson(MockServer.USER_2)));
 		this.host = "http://localhost:" + this.wireMockServer.port();

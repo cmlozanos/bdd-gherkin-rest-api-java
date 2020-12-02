@@ -1,6 +1,8 @@
-Feature: Testing a REST API
-  Users should be able to test requests from a web service
+Feature: 
+	Verify requests operations from a server
 
-  Scenario: Data retrieval from a web service
-    When users want to get information on the 'Cucumber' project
-    Then the requested data is returned
+  Scenario: Retrieval users from a server
+    Given server is started
+    When perform GET operation to retrieve users from "/users"
+    Then all users will be returned
+    And server will be stoped

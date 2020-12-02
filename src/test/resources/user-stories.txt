@@ -2,10 +2,14 @@ User stories:
 
 	1.- As user I Want recover the full list of users
 		* Response Content Type will be JSON
-		* Each user will have id and name
+		* Each user will have id and name and dni and email
 
 		* If list of users is empty then response status code is NO CONTENT
 		* If list of users is bigger than 20 the content will be paged
+		
+		* Rule Must no exists two users with the same dni
+		* Rule Must no exists two users with the same email
+		* Rule Must no exists an user with invalid dni
 		
 	2.- As user I Want recover an user by identifier
 	3.- As user I Want add an user
@@ -25,21 +29,51 @@ User stories:
 			
 		Scenario: Retrieve full list of users filled with 2 users	
 			Given web service with users
-			 |1 | user1|
-			 |2 | user2|
+			 | id | name | dni | email |
+			 |1 | user1| 12345678Z | user1@santander.com |
+			 |2 | user2| 07509266L | user2@santander.com |
 			When retrieve all users
 			Then status will be "success"
 			And content type will be JSON
 			And all users will be returned
-			And each user will have id and name
+			And each user will have id and name and dni and email
+			
+		Rule: Must no exists two users with the same dni
 		
+			Scenario: Retrieve full list of users filled with 1 user	
+			Given web service with users
+			 | id | name | dni | email |
+			 |1 | user1| 12345678Z | user1@santander.com |
+			When add new user with name user2 and dni 12345678Z and email user2@santander.com 
+			Then status will be "error"
+			And error message will be "Must no exists two users with the same dni"
+			
+		Rule: Must no exists two users with the same email
 		
+			Scenario: Retrieve full list of users filled with 1 user	
+			Given web service with users
+			 | id | name | dni | email |
+			 |1 | user1| 12345678Z | user1@santander.com |
+			When add new user with name user2 and dni 07509266L and email user1@santander.com 
+			Then status will be "error"
+			And error message will be "Must no exists two users with the same email"
+		
+		Rule: Must no exists two users with the same email
+		
+			Scenario: Retrieve full list of users filled with 1 user	
+			Given web service with users
+			 | id | name | dni | email |
+			 |1 | user1| 12345678Z | user1@santander.com |
+			When add new user with name user2 and dni 07509266L and email user1@santander.com 
+			Then status will be "error"
+			And error message will be "Must no exists two users with the same email"
 		
 		
 	2.- As user I Want recover an user by identifier
 		Given web service with users
-		 |1 | user1|
-		 |2 | user2|
+		 | id | name | dni | email |
+		 |1 | user1| 12345678Z | user1@santander.com |
+		 |2 | user2| 07509266L | user2@santander.com |
 		When retrieve user by id 1
     	Then status will be "success"
 		
@@ -55,8 +89,9 @@ User stories:
 			.....
 	3.- As user I Want add an user
 		Given users is
-		 |1 | user1|
-		 |2 | user2|
+		 | id | name | dni | email |
+		 |1 | user1| 12345678Z | user1@santander.com |
+		 |2 | user2| 07509266L | user2@santander.com |
 		And User with id 10 name "user10"
 		When add new user
     	Then status will be "created"

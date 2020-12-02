@@ -33,11 +33,4 @@ public class MockServer {
 	public String getHost() {
 		return this.host;
 	}
-
-	public void stop() {
-		if (this.wireMockServer.isRunning()) {
-			this.wireMockServer.stop();
-		}
-	}
-
 }

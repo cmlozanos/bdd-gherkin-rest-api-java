@@ -42,11 +42,6 @@ public class StepDefinitions {
 		this.response.then().body("[1].name", CoreMatchers.equalTo("user2"));
 	}
 
-	@Then("server will be stoped")
-	public void server_will_be_stoped() {
-		this.server.stop();
-	}
-
 	@Given("user id is {int}")
 	public void user_id_is(final Integer id) {
 		this.id = id;

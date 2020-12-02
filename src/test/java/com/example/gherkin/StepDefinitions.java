@@ -61,7 +61,7 @@ public class StepDefinitions {
 	public void user_will_be_returned() {
 		Assertions.assertNotNull(this.response);
 		this.response.then().contentType(ContentType.JSON);
-		this.response.then().body("name", CoreMatchers.equalTo("user1"));
+		this.response.then().body("name", CoreMatchers.equalTo("user" + this.id));
 	}
 
 	@Then("status will be {string}")

@@ -22,3 +22,10 @@ Feature:
     | 1  | "success"   | found     |
     | 2  | "success"   | found     |
     | 3  | "not found" | not found |
+    
+  Scenario: Add user to users on a server
+    Given path is "/users"
+    And User with name "user10"
+    When add new user
+    Then status will be "created"
+    And user id will be returned

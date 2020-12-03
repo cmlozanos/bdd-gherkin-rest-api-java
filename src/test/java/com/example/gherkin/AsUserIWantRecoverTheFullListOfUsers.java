@@ -32,8 +32,8 @@ public class AsUserIWantRecoverTheFullListOfUsers {
 	private final MockServer server = new MockServer();
 	private HashMap<Integer, User> users;
 
-	@Given("web service with non users")
-	public void web_service_with_non_users() {
+	@Given("web service with no users")
+	public void web_service_with_no_users() {
 		users = new HashMap<Integer, User>();
 		server.startAndConfigureMockServer(users);
 	}
@@ -80,6 +80,11 @@ public class AsUserIWantRecoverTheFullListOfUsers {
 	public void each_user_will_have_id_and_name_and_dni_and_email() {
 		response.then().body(containsString("id"), containsString("name"), containsString("dni"),
 				containsString("email"));
+	}
+
+	@When("retrieve all users from page {int}")
+	public void retrieve_all_users(final Integer page) {
+		response = get(server.getHost() + USERS_PATH + "?page=" + page).thenReturn();
 	}
 
 	@Then("a list of {int} users paginated will be returned")

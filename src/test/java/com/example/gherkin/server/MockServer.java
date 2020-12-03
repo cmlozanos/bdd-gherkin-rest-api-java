@@ -71,16 +71,13 @@ public class MockServer {
 		if (users.isEmpty()) {
 			stubFor(get(urlEqualTo("/users")).willReturn(noContent()));
 		} else {
+			final var users = this.users.values().stream().collect(Collectors.toList());
+			stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
 
-			if (users.size() > 5) {
-				final var users = this.users.values().stream().limit(5).collect(Collectors.toList());
-				final var total = Double.valueOf(Math.ceil(this.users.values().size() / 5D)).intValue();
-				final var paginatedUsers = new Pagination(1, total, users);
-				stubFor(get(urlEqualTo("/users")).willReturn(okForJson(paginatedUsers)));
-			} else {
-				final var users = this.users.values().stream().collect(Collectors.toList());
-				stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
-			}
+			final var usersLimited = this.users.values().stream().limit(5).collect(Collectors.toList());
+			final var total = Double.valueOf(Math.ceil(this.users.values().size() / 5D)).intValue();
+			final var paginatedUsers = new Pagination(1, total, usersLimited);
+			stubFor(get(urlEqualTo("/users?page=1")).willReturn(okForJson(paginatedUsers)));
 		}
 	}
 

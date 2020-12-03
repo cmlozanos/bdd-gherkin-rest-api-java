@@ -32,7 +32,7 @@ Feature:
 		 |7 | user7| 29231553W | user7@santander.com |
 		 |8 | user8| 17783156Q | user8@santander.com |
 		 |9 | user9| 53124448Z | user9@santander.com |
-		When retrieve all users
+		When retrieve all users from page 1
 		Then status will be "success"
 		And a list of 5 users paginated will be returned
 		And pagination will have 2 pages

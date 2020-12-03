@@ -6,9 +6,8 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static com.google.common.net.HttpHeaders.LOCATION;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 
@@ -69,12 +68,19 @@ public class MockServer {
 	}
 
 	private void stubForAllUsers() {
-		final List<User> users = new ArrayList<>();
-		if (this.users.isEmpty()) {
+		if (users.isEmpty()) {
 			stubFor(get(urlEqualTo("/users")).willReturn(noContent()));
 		} else {
-			this.users.forEach((id, element) -> users.add(element));
-			stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
+
+			if (users.size() > 5) {
+				final var users = this.users.values().stream().limit(5).collect(Collectors.toList());
+				final var total = Double.valueOf(Math.ceil(this.users.values().size() / 5D)).intValue();
+				final var paginatedUsers = new Pagination(1, total, users);
+				stubFor(get(urlEqualTo("/users")).willReturn(okForJson(paginatedUsers)));
+			} else {
+				final var users = this.users.values().stream().collect(Collectors.toList());
+				stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
+			}
 		}
 	}
 

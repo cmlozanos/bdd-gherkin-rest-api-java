@@ -3,7 +3,7 @@ Feature:
 	
 	Rule: Users empty will be response as no content
 		Scenario: If I have no users at web service then I should have a No Content response
-			Given web service with non users
+			Given web service with no users
 			When retrieve all users
 			Then status will be "no content"
 	
@@ -15,7 +15,6 @@ Feature:
 				 |2 | user2| 07509266L | user2@santander.com |
 				When retrieve all users
 				Then status will be "success"
-				And content type will be JSON
 				And a list of 2 users will be returned
 				And each user will have id and name and dni and email
 			
@@ -35,7 +34,6 @@ Feature:
 		 |9 | user9| 53124448Z | user9@santander.com |
 		When retrieve all users
 		Then status will be "success"
-		And content type will be JSON
 		And a list of 5 users paginated will be returned
 		And pagination will have 2 pages
 		And page will be 1

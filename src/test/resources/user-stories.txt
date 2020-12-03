@@ -25,7 +25,7 @@ User stories:
 		
 		Rule: Users empty will be response as no content
 			Scenario: If I have no users at web service then I should have a No Content response
-			Given web service with non users
+			Given web service with no users
 			When retrieve all users
 			Then status will be "no content"
 			

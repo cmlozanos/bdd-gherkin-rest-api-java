@@ -17,7 +17,6 @@ import com.example.gherkin.server.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static io.restassured.RestAssured.get;
-import static io.restassured.http.ContentType.JSON;
 
 import io.restassured.response.Response;
 
@@ -68,11 +67,6 @@ public class AsUserIWantRecoverTheFullListOfUsers {
 		dataTable.forEach(map -> users.put(valueOf(map.get("id")),
 				new User(valueOf(map.get("id")), map.get("name"), map.get("dni"), map.get("email"))));
 		server.startAndConfigureMockServer(users);
-	}
-
-	@Then("content type will be JSON")
-	public void content_type_will_be_json() {
-		response.then().contentType(JSON);
 	}
 
 	@Then("a list of {int} users will be returned")

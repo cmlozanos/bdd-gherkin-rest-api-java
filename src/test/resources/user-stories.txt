@@ -8,9 +8,11 @@ User stories:
 		 * Scenario: If list of users are two at web service then I should have a success response as JSON with two users and each user will be filled with id, name, dni and email
 		
 		* Rule: Users will be paged by size of 5
-		 * Scenario: If list of users is bigger than 5 the content will be paged
+		 * Scenario: If list of users is bigger than 5 the content will be paged and will be showed the first 5 users
+		 * Scenario: If list of users is 2 the content will be showed the first 2 users
 		
 	2.- As user I Want recover an user by identifier
+	
 	3.- As user I Want add an user
 		* Rule Must no exists two users with the same dni
 		* Rule Must no exists two users with the same email
@@ -25,9 +27,9 @@ User stories:
 		
 		Rule: Users empty will be response as no content
 			Scenario: If I have no users at web service then I should have a No Content response
-			Given web service with no users
-			When retrieve all users
-			Then status will be "no content"
+				Given web service with no users
+				When retrieve all users
+				Then status will be "no content"
 			
 		Rule: Users will be showed as a list of user 
 			Scenario: If list of users are two at web service then I should have a success response as JSON with two users and each user will be filled with id, name, dni and email

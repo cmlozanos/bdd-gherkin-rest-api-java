@@ -24,8 +24,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-
 public class MockServer {
 
 	private static final String STATUS_ERROR_MESSAGE_ENDPOINT_NOT_FOUND = "{\"status\":\"Error\",\"message\":\"Endpoint not found\"}";
@@ -33,22 +31,20 @@ public class MockServer {
 
 	private final WireMockServer wireMockServer;
 	private String host;
-	private Map<Integer, User> users;
 
 	public MockServer() {
 		wireMockServer = new WireMockServer(options().dynamicPort());
 	}
 
 	public void startAndConfigureMockServer(final Map<Integer, User> users) {
-		this.users = users;
 
 		wireMockServer.start();
 		host = "http://localhost:" + wireMockServer.port();
 
 		configureFor("localhost", wireMockServer.port());
-		setUpDefaultResponseTo404();
 
-		setUpUsers();
+		setUpDefaultResponseTo404();
+		setUpUsers(users);
 	}
 
 	private void setUpDefaultResponseTo404() {
@@ -56,37 +52,35 @@ public class MockServer {
 				.willReturn(aResponse().withStatus(NOT_FOUND_404).withBody(STATUS_ERROR_MESSAGE_ENDPOINT_NOT_FOUND)));
 	}
 
-	private void setUpUsers() {
-		stubForAllUsers();
+	private void setUpUsers(final Map<Integer, User> users) {
+		stubForAllUsers(users);
+		stubForUserById(users);
+		stubForAddNewUser();
+	}
 
-		stubFor(get(urlMatching("/users/.*"))
-				.willReturn(notFound().withBody(USER_NOT_FOUND_ERROR).withHeader(CONTENT_TYPE, "application/json")));
-
-		users.forEach((id, element) -> stubForFindById(id));
-
+	private void stubForAddNewUser() {
 		stubFor(post(urlEqualTo("/users")).willReturn(created().withHeader(LOCATION, host + "/users/10")));
 	}
 
-	private void stubForAllUsers() {
+	private void stubForUserById(final Map<Integer, User> users) {
+		stubFor(get(urlMatching("/users/.*"))
+				.willReturn(notFound().withBody(USER_NOT_FOUND_ERROR).withHeader(CONTENT_TYPE, "application/json")));
+
+		users.forEach((id, element) -> stubFor(get(urlEqualTo("/users/" + id)).willReturn(okForJson(users.get(id)))));
+	}
+
+	private void stubForAllUsers(final Map<Integer, User> users) {
 		if (users.isEmpty()) {
 			stubFor(get(urlEqualTo("/users")).willReturn(noContent()));
 		} else {
-			final var users = this.users.values().stream().collect(Collectors.toList());
-			stubFor(get(urlEqualTo("/users")).willReturn(okForJson(users)));
+			final var usersAsList = users.values().stream().collect(Collectors.toList());
+			stubFor(get(urlEqualTo("/users")).willReturn(okForJson(usersAsList)));
 
-			final var usersLimited = this.users.values().stream().limit(5).collect(Collectors.toList());
-			final var total = Double.valueOf(Math.ceil(this.users.values().size() / 5D)).intValue();
-			final var paginatedUsers = new Pagination(1, total, usersLimited);
+			final var usersAsListLimited = users.values().stream().limit(5).collect(Collectors.toList());
+			final var total = Double.valueOf(Math.ceil(users.values().size() / 5D)).intValue();
+			final var paginatedUsers = new Pagination(1, total, usersAsListLimited);
 			stubFor(get(urlEqualTo("/users?page=1")).willReturn(okForJson(paginatedUsers)));
 		}
-	}
-
-	private void stubForFindById(final Integer id) {
-		stubFor(get(urlEqualTo("/users/" + id)).willReturn(findUserById(id)));
-	}
-
-	private ResponseDefinitionBuilder findUserById(final Integer id) {
-		return okForJson(users.get(id));
 	}
 
 	public String getHost() {

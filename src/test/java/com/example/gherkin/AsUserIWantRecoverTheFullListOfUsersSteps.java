@@ -28,12 +28,10 @@ public class AsUserIWantRecoverTheFullListOfUsersSteps {
 
 	private Response response;
 	private final MockServer server = new MockServer();
-	private HashMap<Integer, User> users;
 
 	@Given("web service with no users")
 	public void web_service_with_no_users() {
-		users = new HashMap<Integer, User>();
-		server.startAndConfigureMockServer(users);
+		server.startAndConfigureMockServer(new HashMap<Integer, User>());
 	}
 
 	@When("retrieve all users")
@@ -49,7 +47,7 @@ public class AsUserIWantRecoverTheFullListOfUsersSteps {
 
 	@Given("web service with users")
 	public void web_service_with_users(final List<Map<String, String>> dataTable) {
-		users = new HashMap<Integer, User>();
+		final var users = new HashMap<Integer, User>();
 		dataTable.forEach(map -> users.put(valueOf(map.get("id")),
 				new User(valueOf(map.get("id")), map.get("name"), map.get("dni"), map.get("email"))));
 		server.startAndConfigureMockServer(users);
